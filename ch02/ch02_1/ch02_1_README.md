@@ -116,7 +116,7 @@ src/index.tx 파일 내용을 리액트와 상관없는 자바스크립트 코�
 react 패키지는 createElement라는 함수를 제공한다. 이 함수의 여러가지 정의 중 우리가 살펴볼 내용의 정의를 보면
 ```typescript jsx
 function createElement<P extends {}>(
-    type: FunctionComponent<P>,
+    type: FunctionComponent<P>| ComponentClass<P> | string,
     props?: Attributes & P | null,
 ...children: ReactNode[]
 ): FunctionComponentElement<P>;
