@@ -138,13 +138,14 @@ export default class App extends Component<any, any> {
 
 // 좀더 융통성 있는 코드
 import ClassComponent from './ClassComponent'
+import ArrowComponent from './ArrowComponent'
 
 export default class App extends Component<any, any> {
   render() {
     return (
       <ul>
-        <ClassComponent href={'http://www.google.com'} text={'go to Google'} />
-        <ClassComponent href={'http://www.naver.com'} text={'go to Naver'} />
+        <ClassComponent href={'http://www.google.com'} text={'go to Gooooogle'} />
+        <ArrowComponent href={'http://www.naver.com'} text={'go to Naver'} />
       </ul>
     )
   }
