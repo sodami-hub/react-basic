@@ -179,7 +179,7 @@ export type IconProps = ReactSpanProps & {
 }
 ```
 IconProps가 이 2가지 타입의 교집합 타입이므로 다음처럼 {name:string} 타입의 name 속성과 
-ReactSpanProps 타입의 props를 잔여 연ㅅ나자 구문으로 각기 얻을 수 있다.
+ReactSpanProps 타입의 props를 잔여 연산자 구문으로 각기 얻을 수 있다.
 ```typescript jsx
 export const Icon = FC<IconProps> = ({name, ...props}) => {}
 ```
