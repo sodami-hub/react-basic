@@ -45,8 +45,13 @@
     ]
   },
   "devDependencies": {
+    "@tailwindcss/line-clamp": "^0.4.4",
     "@types/chance": "^1.1.6",
     "@types/luxon": "^3.4.2",
-    "prettier": "^3.5.1"
+    "autoprefixer": "^10.4.20",
+    "daisyui": "^4.12.23",
+    "postcss": "^8.5.3",
+    "prettier": "^3.5.1",
+    "tailwindcss": "3.3"
   }
 }
