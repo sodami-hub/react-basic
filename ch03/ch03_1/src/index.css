@@ -1,3 +1,10 @@
+/*@import url('https://fonts.googleapis.com/icon?family=Material+Icons');*/
+
+.material-icons {
+  font-family: 'Material Icons';
+  display: inline-block;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -10,4 +17,11 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+#exampleInputEmail1 {
+  width: 40%;
+}
+#exampleInputPassword1 {
+  width: 40%;
 }

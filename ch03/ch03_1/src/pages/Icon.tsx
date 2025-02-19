@@ -1,3 +1,11 @@
-export default function App() {
-  return <div>CopyMe</div>
+export default function Icon() {
+  return (
+    <div>
+      <br />
+      <br />
+      <h3>Icon</h3>
+      <span className={'material-icons'}>home</span>
+      <span className={'material-icons'}>check_circle_outline</span>
+    </div>
+  )
 }
