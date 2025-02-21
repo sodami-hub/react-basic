@@ -3,7 +3,7 @@
 먼저 key, children 속성을 알아보고 ref는 4장에서 살펴보겠다.
 
 ## 🎈key 속성 설정하기
-리액트는 <p>와 같은 리액트 컴포넌트뿐 아니라 사용자 컴포넌트에도 key 속성을 제공한다. 리액트가 key 속성을 왜 제공하는지 이해하기위해서 src/App.tsx파일을 작성한다.
+리액트는 `<p>`와 같은 리액트 컴포넌트뿐 아니라 사용자 컴포넌트에도 key 속성을 제공한다. 리액트가 key 속성을 왜 제공하는지 이해하기위해서 src/App.tsx파일을 작성한다.
 ```typescript jsx
 export default function App() {
     const texts = [<p>hello</p>, <p>world</p>]
@@ -11,7 +11,7 @@ export default function App() {
 }
 ```
 코드를 실행하고 개발자 도구를 열어보면 key 속성이 없다는 경고 메시지가 출력된다.<br>
-이 메시지는 <p> 요소 2개에 서로 중복되지 않는 키값을 설정해 주면 해결할 수 있다.
+이 메시지는 `<p>` 요소 2개에 서로 중복되지 않는 키값을 설정해 주면 해결할 수 있다.
 ```typescript jsx
 export default function App() {
     const texts = [<p key={'1'}>hello</p>, <p key={'2'}>world</p>]
@@ -29,19 +29,19 @@ interface Attributes {
 type Key = string | number | bigint;
 ```
 
-key 속성은 같은 이름의 컴포넌트가 여러 개일 때 이들을 구분하려고 리액트 프레임워크가 만든 속성이다. App은 <p> 요소 2개를 사용하므로 이 둘을 구분하려고 key 속성값을 요구하는 것이다.<br>
+key 속성은 같은 이름의 컴포넌트가 여러 개일 때 이들을 구분하려고 리액트 프레임워크가 만든 속성이다. App은 `<p>` 요소 2개를 사용하므로 이 둘을 구분하려고 key 속성값을 요구하는 것이다.<br>
 key가 고유한 값을 요구하므로 앞선 코드보다는 다음처럼 데이터를 배열에 담은 뒤 map 메서드의 2번째 매개변수에서 얻을 수 있는 아이템의 인덱스값을 key값으로 설정하는 방식을 사용한다.
 ```typescript jsx
 const useMap = ['type', 'script'].map((text, index) => <p key={index}>{text}</p>)
 ```
 
 ## 🎈children 속성 설정하기
-모든 리액트 컴포넌트와 사용자 컴포넌트는 children 속성을ㄴ 사용할 수 있다. children 속성의 타입은 값을 설정하지 않아도 되는 선택 속성이다.
+모든 리액트 컴포넌트와 사용자 컴포넌트는 children 속성을 사용할 수 있다. children 속성의 타입은 값을 설정하지 않아도 되는 선택 속성이다.
 ```
 children?: ReactNode | undefined;
 ```
-다만 children은 <div> 처럼 자식 요소를 포함할 수 있는 컴포넌트만 사용할 수 있다. 즉, <img>, <input> 처럼 자식 요소를 포함할 수 없는 컴포넌트에서는 사용할 수 없다.
-다음 코드는 <p>와 <div> 요소의 children 속성에 자식 요소를 설정했다.
+다만 children은 `<div>` 처럼 자식 요소를 포함할 수 있는 컴포넌트만 사용할 수 있다. 즉, `<img>`, `<input>` 처럼 자식 요소를 포함할 수 없는 컴포넌트에서는 사용할 수 없다.
+다음 코드는 `<p>`와 `<div>` 요소의 children 속성에 자식 요소를 설정했다.
 ```typescript jsx
 export default function App() {}
     const useChildren = ['use', 'child'].map((text, index) => (<p key={index} children={text}></p>))
@@ -54,7 +54,7 @@ return <div children={useChildren}></div>
 이어서 src/App.tsx 파일 내용을 P 컴포넌트를 사용하는 방식으로 바꾼다.
 
 ### 🕸️JSX{...props} 구문
-JSX는 다음 코드에서 보는{...props} 구문을 제공한다. 이 구문은 props에 담긴 다양한 속성을 마치 타입스크립트의 전개 연산자처름 <p> 에 함꺼번에 전달하는 역할을 한다.
+JSX는 다음 코드에서 보는{...props} 구문을 제공한다. 이 구문은 props에 담긴 다양한 속성을 마치 타입스크립트의 전개 연산자처름 `<p>` 에 함꺼번에 전달하는 역할을 한다.
 ```typescript jsx
 const P:FC<PProps> = props => {
     return <p {...props}/>
