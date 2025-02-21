@@ -22,10 +22,10 @@ C:\Users\leejinhun\WebstormProjects\react> yarn create react-app [react-first-ap
         yarn upgrade --latest: --latest옵션은 upgrade처럼 작동하지만 package.json의 범위가 아닌 최신버전으로 설치가 된다. yarn upgrade left-pad@^1.0.0이와 같이 직접 버젼을 설정해줄수도 있다.<br>
       <br>
 ```
-// ex) 프리티어 설치(개발용 의존성 추가)
-> yarn add -D prettier
+// 프로젝트의 개발 의존성 
+> yarn add -D @types/luxon @types/chance prettier postcss autoprefixer tailwindcss@3.4.17 @tailwindcss/line-clamp daisyui prettier
 
-// ex) luxon, chance 패키지를 빌드용 의존성과, 개발 의존성에 추가
-> yarn add luxon chance
-> yarn add -D @types/luxon @types/chance
+// 프로젝트의 빌드용 의존성
+> yarn add luxon chance @fontsource/material-icons
+
 // 
