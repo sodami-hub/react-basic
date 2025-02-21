@@ -55,3 +55,23 @@ CSS의 justify-content 스타일 속성으로 플렉스 컨테이너의 콘텐�
 items- 는 수직으로 정렬한다. 또한 수직 방향 플렉스 컨테이너에서 justify- 는 수직으로 정렬하지만, items- 는 수평으로 정렬한다.  
 예제를 통해서 살펴보겠다. src/pages/JustifyCenterTest.tsx 에 코드를 작성한다. 코드에서 공통으로 justify-center를 사용하지만
 앞선 Div는 flex-row, 그 다음 Div는 flex-col을 사용하고 있다.
+
+## 🎈User 컴포넌트 만들기
+플렉스 레이아웃 기능을 바탕으로 좀 더 실질적인 예를 살펴보겠다. 가끔 사용자의 이름, 직업, 이메일 주소, 아바타 등을 보기좋게
+디자인해보겠다. 먼저 src/data/User.ts 파일을 만들고, index.ts 파일에 User.ts를 반영한다.  
+그리고 src/pages 디렉터리에 있는 User.tsx 파일에 코드를 작성한다. 이어서 src/pages/UserContainer.tsx 파일에 코드를 작성한다.
+
+<img src="../../images/03-04.jpg" width="600">
+
+브라우저에서 결과를 확인해보면 위와 같은 화면을 볼 수 있다.(가독성을 위해서? 백그라운드 컬러를 바꿨다. minWidth와 width 속성을 설정해서 콘텐츠의 넓이에 무관하게 모두 똑같이 보이도록 했다.
+
+## 🎈Card 컴포넌트 만들기
+User 컴포넌트 구현 방식을 확장하여 Card 컴포넌트를 만들어보겠다. 대부분의 CSS 프레임워크는 카드라는 이름의 CSS 컴포넌트를 제공한다.
+플렉스 레이아웃으로 카드를 어떻게 만드는지 알아보겠다. src/data/Card.ts 파일을 만들고 코드를 작성한다.
+앞서 구현한 IUser 타입으로 writer라는 속성을 만들고 카드 콘텐츠를 채우는 몇 가지 속성을 정의한다.  
+그리고 src/pages/Card.tsx 파일을 열고 코드를 작성한다. 같은 디렉터리의 CardContainer.tsx 코드도 작성한다.
+
+<img src="../../images/03-05.jpg" width="600" alt="">
+
+
+

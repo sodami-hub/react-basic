@@ -1,10 +1,37 @@
-import {Title} from '../components'
+import {Div, DivProps, Icon, Title} from '../components'
+import type {FC} from 'react'
+import * as D from '../data'
+import User from './User'
+import exp from "node:constants";
 
-export default function App() {
+export type CardProps = DivProps & {
+  card: D.ICard
+}
+const Card: FC<CardProps> = ({card, ...props}) => {
+  const {writer, image, title, paragraphs, dayMonthYearDate, relativeDate} = card
+  const icons = ['home','search','settings','favorite'].map(name => (
+    <Icon key={name} name={name} className={"mr-2 text-2xl"}/>
+  ))
   return (
-    <section className={'mt-4'}>
-      <Title>CopyMe</Title>
-      <div className={'mt-4'}></div>
-    </section>
+    <Div {...props}>
+      <div className={"flex flex-col"}>
+        <Div src={image} className={"h-60"}/>
+        <Div className={"p-4"} minHeight={"16rem"} height={"16rem"} maxHeight={"16rem"}>
+          <p className={"mt-2 text-3xl text-center text-bold"}>{title}</p>
+          <Div className={"flex justify-between"}>
+            <User user={writer} className={"mt-2"}/>
+            <Div className={"mt-2"}>
+              <p className={"text-gray-500"}>{relativeDate}</p>
+              <p className={"text-gray-500"}>{dayMonthYearDate}</p>
+            </Div>
+          </Div>
+          <p className={"mt-2 line-clamp-4"}>{paragraphs}</p>
+          <Div className={"flex flex-row items-center justify-between p-2 mt-1 text-red-500"}>
+            {icons}
+          </Div>
+        </Div>
+      </div>
+    </Div>
   )
 }
+export default Card
