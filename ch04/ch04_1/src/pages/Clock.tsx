@@ -1,8 +1,20 @@
-export default function CopyMe() {
+import type {FC} from 'react'
+import {Div, Title, Subtitle} from '../components'
+
+export type ClockProps = {
+  today: Date
+}
+
+const Clock: FC<ClockProps> = ({today}) => {
   return (
-    <section className={'mt-4'}>
-      <h2 className={'font-bold text-5xl text-center'}>CopyMe</h2>
-      <div className={'mt-4'}></div>
-    </section>
+    <Div
+      className={
+        'flex flex-col items-center justify-center h-screen w-screen bg-primary text-white'
+      }>
+      <Title className={'text-5xl'}>{today.toLocaleTimeString()}</Title>
+      <Subtitle className={'mt-4 text-2xl'}>{today.toLocaleDateString()}</Subtitle>
+    </Div>
   )
 }
+
+export default Clock
