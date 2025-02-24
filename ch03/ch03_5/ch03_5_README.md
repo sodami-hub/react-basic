@@ -45,3 +45,79 @@ theme/daisyui/Button.tsx의 className에 btn 클래스를 기본으로 설정해
 daisyui의 button 컴포넌트는 다음처럼 크기를 설정하는 4가지 클래스를 제공한다. src/pages/ButtonTest/Size.tsx 에 코드를 작성한다.
 
 ## 🎈 Icon 컴포넌트 구현하기
+src/components 의 Icon 컴포넌트를 구현했다. 이 컴포넌트는 본질적으로 `<span>`요소이므로 아이콘을 클릭했을 때 효과가 매끄럽지 못하다.
+이 단점은 daisyui 버튼 CSS 컴포넌트로 Icon을 감싸면 해결할 수 있는데, 코드를 작성하기가 조금 번거롭다.
+```typescript jsx
+import {Icon} from '../components';
+
+<button className="btn btn-primary btn-circle btn-lg" onClick={onClick}>
+  <Icon className="text-5xl" name="close"/>
+</button>
+```
+이 코드를 좀 더 간결하게 할 수 있도록 src/theme/daisyui 디렉터리에 Icon.tsx 파일을 만들고 코드를 작성한다.
+이 코드는 앞서 작성한 Button과 src/components 디렉터리의 Icon 컴포넌트를 앞선 코드 형태로 동작하도록 구현한 것이다.
+그런데 여기서 주의할 점은 Button의 크기에 따라 아이콘의 크기가 자동으로 조절되지 않는다는 것이다. 코드를 작성하고 index.ts 파일에 컴포넌트를 반영한다.  
+그리고 테스트를 위해 src/pages/ButtonTest 디렉터리의 IconTest.tsx파일에 코드를 작성한다. 버튼의 크기에 따라 아이콘의 텍스트 크기가 자동으로 설정되도록 iconClassName 클래스에 설정한다.
+
+## 🎈Input 컴포넌트 구현하기
+src/theme/daisyui 디렉터리에 Input.tsx 파일을 만든다. 해당 파일에 코드를 작성한다. daisyui 의 input CSS 컴포넌트를 사용하려면 항상
+input 클래스를 설정해야 하는 번거로움을 줄이고자 className에 'input'을 기본으로 설정하는 내용을 포함한다.  
+copy.CopyMe 파일을 pages/InputTest 디렉터리에 4개 복사한다. 먼저 Basic.tsx 파일에 코드를 작성한다.
+
+### 🕸️색상 설정하기
+input CSS 컴포넌트는 button CSS 컴포넌트처럼 primay, secondary, accent, onfo, success, warning, error 등 7개 색상으로 경계를 표현할 수 있다.
+src/pages/InputTest 디렉터리의 Color.tsx 파일에 색상을 설정하는 코드를 작성한다.
+
+### 🕸️테두리 설정하기
+Input 컴포넌트에 테두리를 설정하는 코드이다. src/pages/InputTest 디렉터리에 있는 Border.tsx 파일에 테두리를 설정하는 코드를 작성한다.
+
+### 🕸️크기 설정하기
+input CSS 컴포넌트는 button 때와 마찬가지로, lg, md, sm, xs 등 4가지 크기를 설정할 수 있다. src/pages/InputTest 디렉터리에 있는 Size.tsx 파일에 코드를 작성한다.
+실행결과를 보면 입력 상자의 크기는 물론 글자 크기까지 입력 상자의 크기에 맞춰 조정되는 것을 볼 수 있다.
+
+
+## 🎈모달 컴포넌트 구현하기
+사용자의 선택을 입력받는 대화 상자는 크게 모덜리스와 모달 2가지 종류가 있다. 모덜리스 대화 상자는 영역 바깥 쪽을 클릭할 수 있지만,
+모달 대화 상자는 영역 바깥 쪽의 UI가 동작하지 않는다. 그런데 웹 페이지는 모두 모달 대화 상자이다.  
+daisyui는 다음처럼 동작하는 모달 대화 상자 CSS 컴포넌트를 제공한다. 모달 대화 상자는 크게 modal, modal-box, modal-action 등 3가지 클래스로 구성하며,
+modal 클래스에 modal-open 클래스를 추가하면 대화 상자가 화면에 나타난다.
+```typescript jsx
+<div className={"modal modal-open"}>
+  <div className={"modal-box"}>
+    <p>modal contents</p>
+    <div className={"modal-action"}>
+      <button className={"btn btn-primary"}>Accept</button>
+      <button className={"bnt"}>Close</button>
+    </div>
+  </div>
+</div>
+```
+모달 대화 상자를 띄우는 Modal 컴포넌트를 구현해보겠다. src/theme/daisyui 디렉터리에 Modal.tsx 파일을 생성한다.
+daisyui 의 모달 컴포넌트는 최상위 컴포넌트에 modal 클래스를 부여해야 하고, 모달 대화 상자를 오픈하려면 추가로 modal-open 클래스를 부여해야 한다.
+다음은 이에 맞춰 구현해 본 Modal 컴포넌트이다.
+
+```typescript jsx
+import {className} from "postcss-selector-parser";
+
+export type ModalProps = ReactDivProps & {
+  open?: boolean
+}
+export const Modal: FC<ModalProps> = ({open, className: _className, ...props}) => {
+  cosnt
+  className = ['modal', open ? 'modal-open' : '', _className].join(' ')
+  return <div {...props} className={className()}/>
+    }
+```
+daisyui 의 모달 컴포넌트는 최상위 컴포넌트의 첫 번째 자식 컴포넌트로 modal-box 클래스를 부여해야 하는데,
+ModalBox 라는 이름 보다는 ModalContent라는 이름이 더 자연스럽게 느껴진다.  
+또한 잠시 후 보일 ModalContent 컴포넌트의 소성에 다음처럼 onCloseIconClicked 와 closeIconClassName을 추가했는데,
+onCloseIconClecked 속성에 콜백함수를 설정하면 화면 위 오른쪽에 대화 상자를 닫는 아이콘이 표시되고, 콜백 함수를 설정하지 않으면 닫기 아이콘이 나타나지 않는다.
+```typescript jsx
+//닫기 아이콘 표시
+export type ModalContentProps = ReactDivProps & {
+  onCloseIconClicked?: ()=>void
+  closeIconClassName?:string
+}
+```
+이런 내용을 src/theme/daisyui 디렉터리의 Modal.tsx 에 코드를 작성하고, Index.ts 에 반영한다.  
+그리고 src/pages/ModalTest.tsx 파일에 코들르 작성한다. 실행해보면 모달 대화 상자가 웹 페이지에 나타난다.
