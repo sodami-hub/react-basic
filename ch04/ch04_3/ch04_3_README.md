@@ -136,3 +136,164 @@ const onChange = (e:ChangeEvent<HTMLInputElement>) => {
 RadioInputTest.tsx 컴포넌트 초기 내용에 특정 라디오 버튼을 선택하는 로직을 추가한다.
 
 ### 🕸️고차 함수로 라디오 버튼 선택 로직 구현하기
+RadioInputTest.tsx의 내용을 HigherOrderRadioInputTest.tsx 에 복사한다. 앞에서 작성한 RadioInputTest 컴포넌트는 value 속성을 사용해
+선택 로직을 구현했지만, 고차 함수를 사용할 때는 다음처럼 라디오 버튼의 인덱스로 어떤 버튼을 선택했는지 알 수 있다.
+```typescript jsx
+//인덱스로 선택 값 가져오기
+const [selectedIndex, setSelectedIndex] = useState<number>(0)
+```
+그리고 onChange 이벤트 처리 콜백 함수를 고차 함수 형태로 구현한다.
+```typescript jsx
+const onChange = useCallback((index: number)=>()=>setSelectedIndex(notUsed=>index),[])
+```
+그리고 input 의 onChange 이벤트 속성에 index 값을 넘겨 주는 고차 함수를 설정한다.
+```typescript jsx
+<input onChange={onChange(index)}
+```
+HigherOrderRadioInputTest.tsx 파일에 코드를 작성한다. 앞서 구현한 RadioInputTest 컴포넌트와 결과는 같지만 코드가 훨씬 간결하다.  
+코드에서 name 속성값을 jobs 가 아닌 higher jobs 로 설정했다. 만약 jobs로 하면 RadioInputTest 컴포넌트와 같은 그룹으로 묶여서 취급하게 된다.
+
+## 🎈HTML `<form>` 요소
+서버에서 HTML을 생성해 웹 브라우저 쪽에 전송하는 전통 방식의 웹 개발에서는 사용자에게 데이터를 입력받을 대 <form> 요소를 사용한다.
+이때 <form> 요소는 method 속성에 데이터를 전송항 GET과 같은 HTTP 메소드를 설정하고, action 속성에는 폼 데이터를 전송한 뒤 전환할 화면의 URL을
+설정하는 방식으로 사용한다. 만일 method 설정값이 POST 이면 폼 데이터를 암호화하는 다음 3가지 방식 중 하나를 encType 속성에 설정한다.
+1. application/x-www-form-urlencoded(기본값)
+2. multipart/form-data
+3. text/plain
+
+하지만 리액트와 같은 SPA 방식 프런트엔드 프레임워크를 사용할 때는 백엔드 웹 서버가 API 방식으로 동작하므로 굳이 `<form>`요소와
+action, method, encType 등의 속성을 설정할 필요가 없다. 다만 관습적으로 사용자 입력을 받는 부분을 `<form>` 요소로 구현한다. 
+다음은 리액트로 `<form>` 을 구현할 때 코드 패턴이다.
+```typescript jsx
+<form>
+  <input type={"submit"} value={"버튼_텍스트"}/>
+</form>
+```
+그리고 사용자가 `<input type="submit">` 버튼을 눌렀을 때 이벤트 처리는 form 요소의 onSubmit 이벤트 송성을 다음처럼 사용한다.
+참고로 FormEvent 타입 대신 ChangeEvent 나 SyntacticEvent 타입을 사용해도 된다.
+```typescript jsx
+// 버튼 이벤트 처리
+import type {FormEvent} from 'react'
+// .. 생략 ..
+const onSubmit = (e:FormEvent<HTMLFormElement>) => {
+  e.preventDefault() // 매우중요!!!!
+}
+<form onSubmit={onSubmit}>
+  <input type={"submit"} value={"버튼"}/>
+</form>
+```
+그런데 onSubmit 을 구현할 때 한 가지 주의할 점은 웹 브라우저는 onSubmit 이벤트가 발생하면 form이 있는 웹 페이지를 다시 렌더링한다는 것이다.
+이 때문에 onSubmit 을 구현할 때는 바드시 e.preventDefault()를 호출해 웹 페이지가 다시 렌더링되지 않도록 해야 한다.
+
+## 🎈FormData 클래스
+FormData는 자바스크립트 엔진이 기본으로 제공하는 클래스로서, 사용자가 입력한 데이터들을 웹 서버에 전송할 목적으로 사용한다. 
+FormData 클래스는 다양한 메서드들을 제공하는데 보통은 append() 메서드만으로 충분하다.
+다음은 FormData 의 append() 메서드를 호출해 (키,값) 형태의 데이터를 추가하는 코드 예이다.
+```typescript jsx
+const formData = new FormData()
+formData.append('name','jack')
+formData.append('email','aaa@aaa.com')
+```
+만일 FormData의 내용을 JSON 포맷으로 바꾸고 싶다면 자바스크립트 엔진이 기본으로 제공하는 Object.fromEntries() 함수를 다음처럼 호출하면 된다.
+```typescript jsx
+const json = object.fromEntries(formData)
+```
+src/pages/BasicForm/tsx 에 코드를 작성한다. 앞서 배운 내용에 daisyui 의 폼 관련 CSS 컴포넌트들을 적용했다.
+
+## 🎈객체 타입 값일 때 useState 훅 사용하기
+앞서 작성한 BasicForm 은 name 과 email 을 상탯값으로 만들었는데 다음처럼 객체의 속성 형태로도 구현할 수 있다.
+```typescript jsx
+type FormType = {
+  name:string
+  email:string
+}
+```
+그리고 다음처럼 FormType 객체를 상태로 만들 수 있다. 그런데 이처럼 객체를 상태로 만들면 onChangeNAme, onChangeEmail 과 같은 콜백함수를 구현해야 한다.
+그러려면 깊은 복사와 얕은 복사, 그리고 타입스크립트의 전개 연산자 구문을 알아야 한다.
+```typescript jsx
+// 객체를 상태로 만들기
+const [form, setForm] = useState<FormType>({name:'',email:''})
+```
+
+### 🕸️깊은 복사와 얕은 복사, 그리고 의존성 목록
+대다수 프로그래밍 언어에서 어떤 변수에 담긴 값을 다른 변수에 복사할 때는 깊은 복사와 얕은 복사 라는 2가지 방식을 지원한다.
+복사 방식은 값의 타입에 따라 각기 다르게 적용된다. 만일 number, boolean 등 값의 메모리 크기를 컴파일 타임 때 알 수 있는 타입은 항상 깊은 복사가 일어난다.
+반면에 객체, 배열 등 값의 메모리 크기를 런타임 때 알 수 있는 타입은 얕은 복사가 일어난다. 한 가지 예외 상황은 string 타입인데,
+타입스크립트에서 문자열은 항상 읽기 전용이므로 메모리 크기를 컴파일 타임 때 알 수 있다. 따라서 문자열은 깊은 복사가 일어난다.  
+리액트 훅 프로그래밍에서 깊은 복사 여부가 중요한 이유는 대다수 훅 함수에 필요한 의존성 목록 때문이다.
+다음 코드에서 setForm()을 호출할 때 e.target.value로 얻은 name값을 어떻게 사용할지 고민된다.
+```typescript jsx
+const onChangeName = useCallback((e:ChangeEvent<HTMLInputElement>)=> {
+  const name = e.target.value
+  setForm(/* 구현 필요 */)
+},[form])
+```
+예를 들어 setForm()을 다음처럼 구현한다고 가정하겠다. 이 코드는 객체를 복사하므로 얕은 복사가 적용된다.
+```typescript jsx
+// 복사방식 비교
+const onChangeName= useCallback((e:ChangeEvent<HTMLInputElement>)=> {
+  const newForm = form // 얕은 복사
+  // const newForm = Object.assign({},form) // 깊은 복사
+  newForm.name = e.target.value
+  setForm(newForm)
+},[form])
+```
+리액트 프레임워크는 내부적으로 form 상태에 변화가 생겼는지를 form === newForm 형태로 비교한다. 그런데 객체 타입의 복사는 항상 얕은 복사이므로
+이 비굣값은 항상 true 이다. 따라서 리액트는 form에 아무런 변화가 없다고 간주한다. 따라서 리액트는 웹 페이지를 다시 렌더링하지 않으므로
+`<input>`에 값을 입력해도 form에 반영되지 않는다.  
+이 얕은 복사 문제는 코드에 주석으로 해놓은 Object.assign() 함수를 사용하면 깊은 복사가 일어나 form ===newForm 이 항상 false가 되어 웹 페이지를
+다시 렌더링한다. 따라서 웹 페이지는 정상으로 동작한다. 그런데 한 가지 문제는 코드를 이런 형태로 작성하는 것이 번거롭다는 것이다.
+이제 타입스크립트의 전개 연산자 구문으로 코드를 좀 더 간결하게 구현하는 방법을 알아보겠다.
+
+### 🕸️객체에 적용하는 타입스크립트 전개 연산자 구문
+다음 코드에서 첫 줄은 두 객체 앞에 점 3개(...)가 붙었는데, 이 연산자를 사용하는 코드의 위치에 따라 잔여 연산자 또는 전개 연산자라고 한다.
+다음 코드는 전개 연산자를 사용해 두 객체를 병합하는 예이다.
+```typescript jsx
+//전개연산자
+let coord ={...{x:0},...{y:0}};
+console.log(coord); // {x:0, y:0}
+```
+다음 코드는 앞에서 살펴본 깊은 복사가 일어나는 코드에서 Object.assign 호출을 전개 연산자로 간결하게 구현한 것이다.
+```typescript jsx
+const onChangeName= useCallback((e:ChangeEvent<HTMLInputElement>)=> {
+  const newForm = {...form} // 깊은복사(전개연산자 사용)
+  newForm.name = e.target.value
+  setForm(newForm)
+},[form])
+```
+또한 타입스크립트 전개 연산자는 다음처럼 객체의 속성값 가운데 일부를 변경할 수 있다.
+```typescript jsx
+const onChangeName= useCallback((e:ChangeEvent<HTMLInputElement>)=> {
+  // 깊은 복사아 name 속성값 변경이 동시에 발생
+  const newForm = {...form, name: e.target.value}
+  newForm.name = e.target.value
+  setForm(newForm)
+},[form])
+```
+
+### 🕸️타입스크립트 객체 반환 구문
+앞 코드에서 setForm() 호출은 다음처럼 콜백 함수로 구현할 수 있다. 이렇게 하면 form 을 useCallback의 의존성 목록에 추가하지 않아도 되므로
+useCallback 을 호출할 때 선호하는 방식이다.
+```typescript jsx
+const onChangeName = useCallback((e:ChangeEvent<HTMLInputElement>)=> {
+  setForm(form => {return {...form, name: e.target.value}})
+},[])
+```
+그런데 이 코드에서 return 키워드는 불필요하다. 다음은 return 키워드를 생략하고 form 객체를 밴환하도록 구현한 예이다.
+그런데 한 가지 문제는 타입스크립트 컴파일러가 {...form, name:e.target.value}코드를 객체 구문이 아니라 복합 실행문으로 인식한다는 것이다.
+```typescript jsx
+const onChangeName = useCallback((e:ChangeEvent<HTMLInputElement>)=> {
+  setForm(form => {...form, name: e.target.value} ) // 복합 실행문으로 인식
+},[])
+```
+
+타입스크립트에서 객체를 반환하는 구문은 객체를 의미하는 중괄호 {}를 다시 소괄호로 감싼 ({}) 형태로 사용해야 한다.
+이는 복합 실행문은 소괄호로 감쌀 수 없다는 특성을 활용한 것이다.
+```typescript jsx
+// 객체반환 구문
+const onChangeName = useCallback((e:ChangeEvent<HTMLInputElement>)=> {
+  setForm(form => ({...form, name: e.target.value}) ) // 복합 실행문으로 인식
+},[])
+```
+
+### 🕸️ObjectState.tsx 파일 구현하기
