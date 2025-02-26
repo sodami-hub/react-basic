@@ -96,3 +96,43 @@ export default function OnChange() {
 이를 onChange 이벤트 처리기에서 각기 다르게 사용한다. useState 훅은 컴포넌트가 자신만의 상태를 유지하려고 할 때 사용하는 중요한 함수이다.
 
 ## 🎈useToggle 커스텀 훅 만들기
+앞의 checked, value 와 같은 패턴으로 코드를 작성하는 것은 조금 번거롭다. 이런 번거로움을 줄이기 위해 src/hooks/ 디렉터리에 useToggle.ts 파일을 생성하고
+여기에 useToggle 커스텀 훅을 구현한다. 이 코드는 boolean 값은 언제나 true, false 이므로 굳이 ChangeEvent의 target.checked 속성을 사용하지 않고,
+! 연산자로 value값이 false일 때는 true로, true일 때는 false로 값을 바꾸는 방식을 사용한다.  
+useToggle.ts 에 코드를 작성하고 index.ts에 반영한다.  
+이제 useToggle 훅을 daisyui 의 Modal 컴포넌트에 적용해 보겠다. src/pages 디렉터리의 ShowHideModal.tsx 에 코드를 작성한다.
+이 코드는 ModalTest.tsx 파일 내용을 복사해서 useToggle 커스텀 훅을 적용한 것이다. 
+
+## 🎈라디오 버튼 구현 방법
+여러 값 중에서 하나만 고를 수 있께 할 때 라디오 버튼을 사용한다. 그런데 라디오 버튼은 구현이 조금 까다롭다. 먼저 라디오 버튼을 여러 개 사용하려면
+name 속성에 모두 같은 이름을 부여해야 한다. 그러면 웹 브라우저는 자동으로 같은 이름의 라디오 버튼 중 하나만 선택해 화면에 보여준다.  
+그런데 라디오 버튼이나 체크 박스는 value(혹은 defaultValue) 속성값을 화면에 보이게 하지 않는다. 이 때문에 라디오 버튼 옆에 텍스트를 함께 보이려면
+`<label>` 등을 추가해야 한다.  
+src/pages/RadioInputTest.tsx 파일에 코드를 작성한다. 코드는 daisyui 라디오 버튼 관련 CSS 컴포넌트를 사용한다. 이제 이 코드에 특정 라디오 버튼을 선택하는
+각기 다른 2가지 방식의 로직을 구현하겠다.
+
+### 🕸️value 속성으로 라디오 버튼 선택 로직 구현하기
+사용자가 선택한 라디오 버튼을 코드에서 알려면 checked 속성값에 다음과 같은 형태의 코드를 작성해야 한다. 그런데 '값 === selectedValue'에서
+값 부분을 구체적으로 어떻게 작성해야 할지 고민이다.
+```typescript jsx
+const [selectedValue, setSelectedValue] = useState<string>('초기 선택 값')
+<input type={"radio"} name={"same name"} checked={값===selectedValue}/>
+<input type={"radio"} name={"same name"} checked={값===selectedValue}/>
+<input type={"radio"} name={"same name"} checked={값===selectedValue}/>
+```
+만약 고차 함수를 사용하고 싶지 않다면 값 부분은 다음처럼 defaultValue 속성을 사용해서 설정해야 한다.
+```typescript jsx
+const [selectedValue, setSelectedValue] = useState<string>('초기 선택 값')
+<input type={"radio"} name={"same name"} checked={값===selectedValue} defaultValue='값1' />
+<input type={"radio"} name={"same name"} checked={값===selectedValue} defaultValue='값2' />
+<input type={"radio"} name={"same name"} checked={값===selectedValue} defaultValue='값3' />
+```
+그려면 onChange 이벤트 콜백 함수는 다음의 형태로 구현하게 된다.
+```typescript jsx
+const onChange = (e:ChangeEvent<HTMLInputElement>) => {
+  setSelectedValue(notUsed => e.target.value)
+}
+```
+RadioInputTest.tsx 컴포넌트 초기 내용에 특정 라디오 버튼을 선택하는 로직을 추가한다.
+
+### 🕸️고차 함수로 라디오 버튼 선택 로직 구현하기
