@@ -59,7 +59,7 @@ const increment = useCallback(()=> {
 지금까지의 내용을 종합하여 src/pages/NumberState.tsx 파일에 코드를 작성한다. count에 의존성 문제가 발생하지 않도록 세터 함수
 setCount의 매개변수를 콜백 형태로 호출한다.
 
-## 🎈리액트 <input> 컴포넌트에 훅 사용하기
+## 🎈리액트 `<input>` 컴포넌트에 훅 사용하기
 리액트의 `<input>` 컴포넌트는 type 속성을 제공하며, 이 속성은 기본값 'text' 외에도 'checkbox', 'radio' 와 같은 값을 가질 수 있다.
 `<input>`은 boolean 타입의 checked 속성과 string 이나 number 타입의 value 속성 2가지를 제공한다. 그리고 두 속성 중 값이 바뀌면 onChange 이벤트 속성에 설정한 콜백 함수를 호출한다.  
 그런데 리액트의 `<input>` 요소와 HTML의 `<input>` 요소는 사용법에 차이가 있다. HTML의 input 요소는 기본값을 설정하려면 다음처럼 표현할 수 있다.
@@ -297,3 +297,40 @@ const onChangeName = useCallback((e:ChangeEvent<HTMLInputElement>)=> {
 ```
 
 ### 🕸️ObjectState.tsx 파일 구현하기
+ObjectState.tsx 파일에 앞서 살펴본 내용을 종합해 코드를 작성한다. 앞서 구현한 기본 폼 코드와 결과는 같지만 리액트 훅 호출 코드가
+훨씬 이해하기 쉬워졌다. 또한 FormType에 다른 멤버 속성을 추가해도 같은 코드 패턴으로 구현하면 되므로 확장성도 좋아졌다.
+
+## 🎈배열 타입 값일 때 useState 훅 사용하기
+아래 그림은 잠시 후 만들 ArrayState 컴포넌트의 실행 결과이다. 처음에는 버튼 2개만 보이지만 더하기 버튼을 누르면 이미지가 추가된다.
+
+<img src="../../images/04-04.jpg" width="450">
+
+이런 화면은 배열을 컴포넌트의 상태로 만들면 쉽게 구현할 수 있다. 즉, 배열 또한 타입이므로 useState 훅을 사용해 상태로 만들 수 있다.
+```typescript jsx
+// 배열을 상태로 만들기
+const [images,setImages] = useState<string[]>([])
+```
+두 버튼의 inClick 이벤트 속성에는 addImages와 clearImages라는 콜백 함수를 설정한다. 이 콜백 함수들을 구현할 때 배열에 적용하는 타입스크립트의
+전개 연산자 구문을 알면 코드를 좀 더 간결하게 작성할 수 있다.
+
+### 🕸️배열에 적용하는 타입스크립트 전개 연산자 구문
+객체에 적용하는 전개 연산자 구문을 알아봤다. 다음처럼 배열에도 적용할 수 있다. 전개 연산자는 깊은 복사를 일으키므로 numbers === newNumbers 는 항상 false이다.
+즉, numbers === newNumbers 는 리액트 의존성 목록 아이템으로 사용할 수 있다.
+```typescript jsx
+// 전개연산자 배열에 사용
+const number = [1,2,3]
+const newNumbers = [...number, 4] // [1,2,3,4]
+```
+
+다음은 배열에 적용하는 전개 연산자 구문을 활용해 addImage 콜백 함수를 구현한 예이다. 이 코드는 전개 연산자가 뒤쪽에 있으므로
+새로 생성되는 이미지 정보가 배열 맨 앞에 위치한다.
+```typescript jsx
+const addImage = useCallback(()=>setImages(images => [D.randomImage(),...images]),[])
+```
+다음은 clearImages 콜백 함수를 구현한 예이다. images를 초기화하는 방법은 images를 빈 배열로 [] 설정하면 된다.
+```typescript jsx
+const clearImages = useCallback(()=>setImages(notUsed => []),[])
+```
+
+### 🕸️ArrayState 컴포넌트 만들기
+ArrayState.tsx 에 지금까지의 내용을 종합해서 코드를 작성한다.
