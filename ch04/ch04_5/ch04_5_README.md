@@ -160,6 +160,16 @@ const onChange = (e:ChangeEvent<HTMLInputElement>) => setValue(notUsed=>e.target
 ## 🎈forwardRef() 함수 이해하기
 forwardRef 함수는 이름대로 부모 컴포넌트에서 생성한 ref를 자식 컴포넌트로 전달해 주는 역할을 한다. 
 
+```typescript jsx
+forwardRef<RefType, PropsType>((props, ref) => {
+  // 컴포넌트 구현
+})
+```
+
+여기서 RefType은 ref를 통해 노출되는 메서드나 속성의 타입을 정의하고, PropsType은 컴포넌트가 받을 수 있는 props의 타입을 정의한다. 
+이를 통해 타입 안전성을 높이고, 코드의 가독성을 향상시킬 수 있습니다.
+
+
 ### 🕸️forwardRef 함수가 필요한 이유 알기
 03-5 절에서 src/theme/daisyui 디렉터리에 다음과 같은 Input.tsx 파일을 만든 적이 있다.
 ```typescript jsx
@@ -208,6 +218,8 @@ const methodsRef = useRef<TextInputMethods |null>(null)
 const setFocus = () => methodsRef.current?.focus()
 const dismissKeyboard = () => methodsRef.current?.dismiss()
 ```
+
+`✨ useImperativeHandle 훅은 forwardRef로 가져온 부모 객체의 ref 값으로 부모 객체의 속성을 사용하기 위해서 사용하는 훅이다.`
 
 ### 🕸️useImperativeHandle 훅의 타입
 먼저 useImperativeHandle 훅의 타입 정보를 살펴보면 다음과 같다.
