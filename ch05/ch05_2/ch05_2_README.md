@@ -4,3 +4,107 @@
 리덕스는 이런 리듀서의 복잡함을 덜 수 있게 여러 리듀서를 하나로 합쳐 주는 combineReducers() 함수를 제공한다.
 
 ## 🎈리듀서 합치기
+combineReducers() 함수는 여러 리듀서를 통합하여 새로운 리듀서를 만들어 준다. redux 패키지는 다음의 combineReducrers() 함수를 제공한다.
+```typescript jsx
+import {combineReducers} from 'redux'
+```
+combineReducers() 함수는 다음처럼 ReducersMapObject 타입 객체를 입력 매개변수로 받는 함수이다. 여기서 타입 변수 S는 상태를 의미하며
+이 절에서의 AppState가 이에 해당한다.
+```typescript jsx
+export function combineReducers<S>(reducers: ReducersMapObject<S,any>):
+Reducer<CombineState<S>>
+```
+매개변수 reducers는 ReducersMapObject 타입 객체이다. 이 객체의 선언문을 보면 상태 타입의 키에 설정되는 값은 `Reducer<State[Key], Action>`
+타입의 함수여야 한다는 것을 알 수 있다.
+```typescript jsx
+export type ReducersMapObject<State = any, A extends Action = Action> = {
+  [Key in keyof State] : Reducer<State[Key], A>
+}
+```
+
+## 🎈앱 상태를 구성하는 멤버 상태 구현하기
+combineReducer() 함수를 실습해 보겠다. src/store 에 cards,clock,counter,remoteUser 디렉터리를 생성하고 기본 파일을 만든다.
+그리고 src/store/AppState.ts 파일에 방금 만든 4개 디렉터리의 내용을 추가한다. 이 코드는 앱 수준 상태 AppState를
+다시 clock, counter, remoteUser,cards 라는 이름의 독립적으로 동작하는 멤버 상태로 구성한 것이다.  
+코드에서 AppState는 4개의 멤버 상태로 구성했으므로 이를 각각 처리하는 4개의 리듀서가 필요하다. 그리고 앞서 만든
+clock, counter와 같은 디렉터리 안에는 컴파일 오류만 없는 최소한으로 구현한 리듀서가 이미 있다.  
+이제 src/store/rootReducer.ts 파일을 구현한다. 코드는 combineReducers() 함수로 '상태_이름:해당_리듀서' 형태의 조합을
+모두 결함하여 새로운 루트 리듀서를 만든다. 앞서 combineReducers()의 매개변수 reducers는 ReducersMapObject 타입이라고 했다.
+이 타입 선언문에서 `[Key in keyof State]: Reducer<State[Key],A>` 부분을 고려해 보면, clock, counter 등의 멤버 상태는 모두
+AppState의 키이므로, [Key in keyof State] 조건을 만족한다. 또한 각 키 설정값의 타입은 Reducer<State[Key],A>, 즉
+리듀서 함수여야 하므로 Clock.reducer를 설정해야 한다.  
+src/store/rootReducer.ts 를 작성한다. combineReducers() 함수는 리덕스 관련 코드를 어떤 기계적인 패턴으로
+구현할 수 있게 해준다. 이제 clock부터 차례로 AppState의 멤버 상태에 대응하는 리덕스 기능을 구현해 가면서
+이 기계적인 패턴의 코드를 어떻게 작성하는지 알아보겠다.  
+src/pages 디렉터리에 실습할 컴포넌트의 기본 형태를 만들고, App.tsx에 컴포넌트를 추가한다.
+
+## 🎈시계 만들기
+먼저 AppState 의 clock 멤버 상태에 대한 타입을 선언한다. src/store/clock/types.ts 에 코드를 작성한다. 코드는 AppState.clock의
+타입을 any가 아닌 string으로 변경한다. 그리고 `Action<'@clock/setClock'>` 타입과 payload라는 속성이 있는 '이름 없는 타입'의 교집합으로
+액션을 선언한다. 그런데 @clock/이나 payload라는 이름이 좀 생소하다. 이 이름은 리덕스 커뮤니티에서 관행으로 사용하는 타입과 변수 이름이다.
+왜 이런 이름을 사용하지는 잠시 후에 알아보겠다.  
+이제 SetClockAction 타입의 객체를 생성하는 setClock 이란 '액션 생성기'를 만들어 보겠다. src/store/clock/action.ts 에 코드를 작성한다.
+참고로 코드에서 setClock 은 매개변수 payload의 타입을 설정할 수 있께 해주므로 {type: '@clock/setClock', payload} 형태의 코드에서
+발생할 수 있는 타입 오류를 미연에 방지해주는 효과가 있다.  
+이어서 reducers.ts 파일을 작성한다. 앞서 types.ts 파일의 State 타입은 string 이므로 직렬화를 위해 Date를 ISO 문자열로 바꿔서 설정한다.  
+지금까지 만든 clock 디렉터리의 리덕스 기능을 테스트하기 위해서 src/pages/ClockTest.tsx 파일을 작성한다. 이 코드는 AppState의 clock
+속성값을 화면에 출력하므로 useSelector의 타입 변수들을 <AppState, C.State>로 설정한다. 그리하여 state 의 clock 등 4개의
+멤버 상태 가운데 clock만 useSelector로 꺼낸다.
+
+## 🎈카운터 만들기
+카운터는 더하기 아이콘을 누르면 숫자가 1씩 증가하고, 빼기 아이콘을 누르면 1씩 감소하는 기능이다. 이 기능을 src/store/counter 디렉터리에 구현하겠다.
+이번에는 src/pages/CounterTest.tsx 파일을 먼저 구현하고 리덕스 기능을 차례로 작성하겠다. 이 코드에서 counter는 더하기와 빼기
+연산을 하므로 타입은 number여야 한다.
+
+src/store/counter 의 파일들에 코드를 작성한다.
+
+### 🕸️'@이름/' 접두사와 payload라는 변수 이름을 사용하는 이유
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
