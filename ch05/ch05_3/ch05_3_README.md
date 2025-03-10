@@ -143,7 +143,45 @@ doTimedLoading.ts 란 이름의 파일을 생성한다. 그리고 코드를 작�
 참고로 `dispatch<any>` 는 type 속성이 없는 액션이라는 타입스크립트 오류를 막는 방법이다. 
 
 ### 🕸️오류 메세지 구현하기
+이번엔 오류 메시지를 출력하는 errorMessage 멤버 상태를 구현해 보겠다. Error 는 자바스크립트 엔진이 기본으로 제공하는 타입이다.
+리액트 개발에서 Error 타입 객체는 Promise 타입 객체를 처리하는 코드와 try~catch 구문을 사용하는 코드에서 흔히 만날 수 있다.
+보통 리액트 개발에서 Error 객체는 다음처럼 Error | null 타입 상태로 구현한다.
+```typescript jsx
+const [error, setError] = useState<Error | null>(null)
+{error && <p>{error.message}</p>}
+```
+하지만 리덕스 상태로서 Error 타입은 이처럼 null값일 수 있는 형태로 구현하는 것은 바랍직하지 않다. 사실 UI 관점에서만 보면 Error 타입이
+제공하는 모든 정보가 아니라 오직 message 속성에 담긴 오류 메시지만 필요하다. 따라서 다음처럼 오류메시지의 길이가 0보다 큰지 판단하는
+코드를 만드는 것이 바람직하다.
+```typescript jsx
+const errorMessage = useSelector(state => state.errorMessage)
+{errorMessage.length && <p>{errorMessage}</p>}
+```
+  
+먼저 scr/store/errorMessage 디렉터리의 파일들에 코드를 작성한다. 추가로 generateErrorMessage.ts 파일을 만들고
+썽크 액션을 구현한다. try~catch 문으로 Error 타입 객체를 throw 하는 형태로 Error 객체를 만든다. 참고로 if 문은
+타입스크립트 컴파일 오류를 피하기 위해 필요하다.  
+마지막으로 ErrorMessageTest.tsx 에 코드를 작성한다. 코드는 무작위 문자열로 오류 메시지를 발생한다. 또한 오류가 없을 때
+UI가 보이지 않게 하기 위해 errorMessage 의 길이가 0보다 큰지를 판별한다.
 
+### 🕸️사용자 정보 변경 기능 개선하기
+05-2 절에서 RemoteUserTest 컴포넌트를 다음과 같이 구현했다. 이번 절에서 살펴본 리덕스 미들웨어를 사용해 RemoteUserTest 컴포넌트와
+똑같이 동작하는 fetchUser 라는 멤버 상태를 구현해 보겠다.
+```typescript jsx
+cosnt getRemoteUser = useCallback(()=> {
+  toggleLoading()
+  D.fetchRandomUser()
+    .then(user => dispatch(R.setUser(user)))
+    .catch(setError)
+    .finally(toggleLoading)
+},[])
+```
+src/store/fetchUser 디렉터리에 fetch.ts 파일을 만든다. 05-2 절의 RemoteUserTest.tsx 파일은 getRemoteUser와 changeName 콜백 함수에서
+D.fetchRandomUser 함수를 호출하고 있다. 이제 이 콜백 함수의 내용을 fetch.ts 파일에 다음처럼 구현한다. 코드는 리액트 훅을 사용하는
+부분을 모두 썽크 액션 형태로 바꾼 다음, useState 훅 호출로 얻은 세터 함수들의 호출 코드를 
+loading과 errorMessage 멤버 상태의 액션들을 dispatch 하는 방식으로 바꿨다. 다만 changeName 이란 액션의 이름이 서로 중복되므로 
+changeName 대신 changeNameByFetching 이란 이름의 함수를 내보내고 있다.  
+이제 테스트 코드를 작성한다. src/pages/FetchTest.tsx 에 코드를 작성한다. 썽크 액션을 통해서 코드가 간결해졌다.
 
 
 
