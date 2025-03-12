@@ -128,14 +128,80 @@ return val
 
 ## 🎈BoardList 컴포넌트 구현하기
 지금까지 목록을 생성하는 기능을 만들었다. 이번에는 이 목록을 화면에 표시하고 빼기 아이콘을 눌렀을 때 해당 목록을 제거하는
-BoardList 컴포넌트를 만들겠다.
+BoardList 컴포넌트를 만들겠다. 먼저 src/pages/BoardList 의 index.tsx에 기본 코드를 작성한다.  
+이제 BoardList 컴포넌트를 Board 컴포넌트에 적용할 차례이다. 그 전에 리스트 엔티티를 배열로 바꾸는 방법을 알아보겠다.
+listEntities 객체에 담긴 목록을 화면에 보이게 하려면 다음처럼 listEntities의 타입 `Record<uuid,List>`가 아니라,
+List[] 타입 배열로 바꿔줘야 한다.
+```typescript
+const lists = useSelector<AppState, List[]>(({listidOrders})=> ??? )
+```
+그런데 각 목록의 순서는 다음처럼 listidOrders에 담겨있따.
+```typescript
+const listidOrders = useSelector<AppState, LO.State>(({listidOrders})=>listidOrders)
+```
+결국 List[] 타입 배열은 다음처럼 listidOrders를 통해 uuid의 순서를 결정한 다음, 각 uuid에 해당하는 목록을
+listEntities에서 얻어올 수 있다.
+```typescript
+const lists = useSelector<AppState, List[]>(({listidOrders, listEntities})=> {
+  listidOrders.map(uuid=>listEntities[uuid])
+})
+```
+이제 src/pages/Board/index.tsx 에 BoardList 컴포넌트를 반영한다. 여기까지 작성하면 더하기 아이콘으로
+새로운 목록을 만들고, 빼기 아이콘으로 목록을 삭제할 수 있다.
+
+## 🎈리덕스 기능을 커스텀 훅으로 만들기
+Board 컴포넌트는 현재 리덕스 기능을 그대로 구현하고 있어서 코드가 복잡하다. 좀 더 간결하게 하고자 src/store 디렉터리에
+useLists.ts 파일을 만든다. 그리고 Board.tsx 파일의 코드를 useLists 란 이름의 커스텀 훅으로 만든다.
+
+##  🎈 ListCard 컴포넌트 구현하기
+BoadList 에 카드를 추가하는 기능을 구현하겠따. 05-2 절에서 구현한 src/pages/CardsTest 디렉터리의 Card.tsx 파일을 src/pages/ListCard
+디렉터리에 index.tsx 파일로 저장한다.
+
 ️
-### 🕸️
-### 🕸️
-### 🕸️
-### 🕸️
-### 🕸️
-### 🕸️
+## 🎈 cardEntities 멤버 상태 구현하기
+src/store/cardEntities 디렉터리의 types.ts 파일에 코드를 작성한다. 이 코드는 엔티티 타입의 State를 선언하고 2개의 액션 타입을
+선언하고 있다. 이 내용은 List 타입 대신 Card 타입을 사용했을 뿐 앞서 구현한 listEntities의 내용과 같다.  
+이어서 해당 디렉터리의 액션 생성기및 리듀서 코드를 작성한다.
+
+
+## 🎈 listidCardidOrders 멤버 상태 구현하기
+카드는 각각 특정 목록에 소속되어 있으며 드래그 앤 드롭으로 순서를 바꿀 수 있다. 따라서 특정 목록이 어떤 카드를 어떤 순서로 가지고 있는지를
+나타내는 정보가 필요하다. listidCardidOrders 멤버 상태는 `Record<리스트_uuid, 카드_uuid[]>` 타입의 엔티티를 가진다.
+src/store/listidCardidOrders 디렉터리의 types.ts, actions.ts 를 작성한다.  
+그리고 이런 액션들이 왜 필요한지 리듀서를 구현하면서 알아보겠다. 먼저 **@listidCardids/set** 액션은 목록 uuid의 속성에
+카드 uuid의 배열을 추가하려고 할 때 사용한다. **@listidCardids/remove** 액션은 listidOrders에서 특정 목록이 삭제되면
+listidCardidOrders에서도 `state[삭제된_리스트_uuid]` 부분을 삭제해 메모리가 낭비되지 않도록 한다.
+그리고 **lisdidCardids/prependCardid** 액션은 다음 코드 형태로 특정 목록이 가지고 있는 카드 uuid 들 앞에 새로운
+카드 uuid 를 삽입하는 용도이다.
+```typescript
+const cardIds = state[리스트_uuid]  // 기존 카드_uuid들
+return {...state, [리스트_uuid]: [새_카드_uukd, ... cardIds]}
+```
+**@listidCardids/appendCardid** 액션은 다음 코드 형태로 특정 목록이 가지고 있는 카드 uuid들 맨 뒤에
+새로운 카드 uuid를 삽입하는 용도이다.
+```typescript
+const cardIds = state[리스트_uuid] // 기존 카드_uuid들
+return {...state, [리스트_uuid]:[...cardIds, 새_카드_uuid,]}
+```
+**listidCardids/removeCardid** 특정 카드가 삭제될 때 목록에 있는 카드 uuid를 지우는 용도이다.
+```typescript
+const cardIds = state[리스트_uuid] // 기존 카드_uuid들
+return {
+  ...state, // listidCardids 상태 보존
+  [action.payload.listid]:cardIds.filter(id => id !== 제거할_카드_uuid)
+}
+```
+이러한 내용을 바탕으로 reducers.ts 코드를 작성한다. 그리고 useLists 훅에 cardEntities 와 listidCardidOrders 기능을 반영한다.
+
+## 🎈useCards 커스텀 훅 만들기
+앞서 useLists 커스텀 훅 제작으로 Board의 내용이 간결해졌다. 이제 useCards 커스텀 훅을 작성하여 카드 관련 코드가 간결해지도록 하겠다.
+먼저 src/store/useCards.ts 파일을 생성하고 코드를 작성한다. 그리고 src/pages/BoardList/index.tsx 파일에 useCards 훅을 호출하여
+카드 기능 구현에 필요한 cards 와 onPrependCard 등의 함수를 얻고 있다. 여기까지 구현하면 목록에서 카드를 추가혹 삭제할 수 있다.
+
+## 🎈react-dnd의 useDrop 훅 알아보기
+react-dnd 패키지는 useDrop훅을 제공한다. 
+
+
 ### 🕸️
 ### 🕸️
 ### 🕸️

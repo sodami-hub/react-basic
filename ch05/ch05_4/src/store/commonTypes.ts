@@ -8,6 +8,7 @@ export type List = {
 }
 
 export type Card = ICard
+
 export type CardidListid = {
   cardid: UUID
   listid: UUID
