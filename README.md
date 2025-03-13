@@ -21,11 +21,10 @@ C:\Users\leejinhun\WebstormProjects\react> yarn create react-app [react-first-ap
         yarn upgrade [package | package@tag | package@version | --scope @scope]... [--ignore-engines] [--pattern]: package.json에 명시된 범위내에서 패키지의 버젼을 최신으로업그레이드 해주는 기능이다.<br>
         yarn upgrade --latest: --latest옵션은 upgrade처럼 작동하지만 package.json의 범위가 아닌 최신버전으로 설치가 된다. yarn upgrade left-pad@^1.0.0이와 같이 직접 버젼을 설정해줄수도 있다.<br>
       <br>
+
+```shell
+yarn add -D @types/luxon @types/chance prettier postcss autoprefixer tailwindcss@3.4.17 @tailwindcss/line-clamp daisyui
+yarn add -D @types/redux-logger @types/redux-thunk @types/react-dnd @types/react-beautiful-dnd
+yarn add luxon chance @fontsource/material-icons redux react-redux @reduxjs/toolkit redux-logger redux-thunk
+yarn add react-dnd react-dnd-html5-backend react-beautiful-dnd react-router-dom
 ```
-// 프로젝트의 개발 의존성 
-> yarn add -D @types/luxon @types/chance prettier postcss autoprefixer tailwindcss@3.4.17 @tailwindcss/line-clamp daisyui prettier
-
-// 프로젝트의 빌드용 의존성
-> yarn add luxon chance @fontsource/material-icons
-
-// 
