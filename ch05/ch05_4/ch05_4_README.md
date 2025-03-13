@@ -199,48 +199,123 @@ return {
 카드 기능 구현에 필요한 cards 와 onPrependCard 등의 함수를 얻고 있다. 여기까지 구현하면 목록에서 카드를 추가혹 삭제할 수 있다.
 
 ## 🎈react-dnd의 useDrop 훅 알아보기
-react-dnd 패키지는 useDrop훅을 제공한다. 
+react-dnd 패키지는 useDrop훅을 제공한다. useDrop 훅의 기본 사용법은 다음처럼 튜플 타입 반환값에서 두 번째 멤버인 drop 함수를 얻는 것이다.
+참고로 accept 는 'card', 'list' 등 드래그 앤 드롭 대상을 구분하는 용도로 사용할 문자열이다.
+```typescript
+const [,drop] = useDrop(()=>({
+  accept: 'card'
+}))
+```
+그리고 이 drop 함수를 드롭을 원하는 HTML 요소의 ref에 설정해 준다.
+```typescript jsx
+<div ref={(node)=>drop(node)}/>
+```
+또는 다음처럼 drop 함수를 호출하는 방식으로 구현할 수도 있다.
+```typescript jsx
+const divRef = useRef<HTMLDivElement>(null)
+drop(divRef)
+```
+
+## 🎈 react-dnd 의 useDrag 훅 알아보기
+react-dnd 는 useDrag 훅도 제공한다. useDrag 훅의 사용법은 다음의 샘플 코드에서 찾을 수 있다. 이 절에서는 useDrop, useDrag 훅을 함께 사용한다.
+```javascript
+const [{isDragging}, drag] = useDrag({
+    type: 'card',
+    item: ()=> {
+        return {id,index}
+    },
+    collect: (monitor:any) => ({
+        isDragging:monitor.isDragging(),
+    }),
+})
+
+const opacity = isDragging ? 0: 1
+drag(ref)
+return(
+    <div ref={ref} style={{...style, opacity}} data-handler-id={handlerId}>
+        {text}
+    </div>
+)
+
+```
+## 🎈 ListDraggable 컴포넌트 구현하기
+앞의 샘플 코드를 바탕으로 ListDraggable 컴포넌트를 만들어보겠다. 먼저 src/components 디렉터리에 ListDraggable.tsx 파일을 생성하고 코드를 작성한다.
+그리고 같은 디렉터리의 index.ts 에 코드를 반영한다.  
+이어서 src/pages/BoardList/index.tsx 파일에 ListDraggable 컴포넌트를 반영한다. ListDraggable 이 요구하는 index 와 onMoveList 함수를 Board 로부터
+받기 위해 이 2개의 속성을 추가로 설정하고 있다.  
+하지만 컴파일 오류가 발생한다. 이제 useLists 커스텀 훅을 수정하여 Board 쪽에 발생하는 컴파일 오류를 해결한다.
+ListDraggable에 추가한 onMoveList 속성을 Board로부터 얻으려면 useLists 훅의 코드를 수정해야 한다. 그리고 src/pages/Board/index.tsx 코드를 수정한다.  
+여기까지 작성하면 드래그 앤 드롭으로 목록을 이동할 수 있는 상태가 된다.
 
 
-### 🕸️
-### 🕸️
-### 🕸️
-### 🕸️
-### 🕸️
-### 🕸️
-### 🕸️
-### 🕸️
-### 🕸️
-### 🕸️
-### 🕸️
+## 🎈 react-beautiful-dnd 패키지 이해하기
+react-beautiful-dnd 패키지 기능을 사용하여 카드를 드래그 앤 드롭으로 옮길 수 있게 해보겠다. 해당 패키지는 DragDropContext 와 
+Draggable, Droppable 컴포넌트를 제공한다.
+
+```typescript jsx
+import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd";
+```
+이 패키지 또한 컨텍스트를 기반으로 하고 있으며 기본 사용법은 다음과 같다.
+```typescript jsx
+import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd";
+import type {DropResult} from 'react-beautiful-dnd'
+
+const onDragEnd = (resul:DropResult) => {}
+
+<DragDropContext onDragEnd={onDragEnd}>
+// Droppable과 Draggable을 사용하는 컴포넌트
+</DragDropContext>
+
+```
+src/pages/Board/index.tsx 파일에 react-beautiful-dnd 가 동작할 수 있도록 DragDropContext 컴포넌트를 추가한다. 이 컴포넌트가 동작하려면
+onDragEnd 라는 콜백 함수를 onDragEnd 속성에 추가해야 한다. 그런데 onDragEnd는 useLists 훅에서 가져오므로 useLists 훅을 수정하기 전까지는 오류가 발생한다.
+
+## 🎈 CardDraggable 컴포넌트 구현하기
+react-beautiful-dnd 패키지의 Draggable 컴포넌트는 사용법이 독특하므로 src/components 디렉터리에 CardDraggable.tsx 파일을 만들고
+새롭게 구현하겠다. 이 코드의 draggableId는 카드의 uuid, index 는 카드가 담긴 배열에서의 특정 위치(즉 색인)를 의미한다.
+CardDraggable.tsx 를 같은 디렉터리의 index.ts 에 포함시킨다. 이제 ListCard 컴포넌트에 CardDraggable 컴포넌트를 적용한다.
+react-beautiful-dnd 관련 코드가 없어서 코드가 간결해졌다.
+
+## 🎈 CardDroppable 컴포넌트 구현하기
+react-beautiful-dnd 패키지의 Droppable 컴포넌트를 이용하여 CardDroppable 컴포넌트를 만들어 보겠다. 이 컴포넌트 또한
+사용법이 독특하므로 src/components 디렉터리에 CardDroppable.tsx 를 만들고 코드를 작성한다. 여기서 droppableId는
+목록의 uuid를 설정하는 속성이다. index.ts 에도 해당 코드를 반영한다.  
+그리고 BoardList 컴포넌트에 CardDroppable 컴포넌트를 적용한다.
 
 
+## 🎈 배열 관련 유틸리티 함수 구현하기
+이제 DragDropContext 컴포넌트가 요구하는 onDragEnd 속성에 설정할 콜백 함수를 구현할 차례이다. 잠시 이 콜백 함수를 구현할 때
+필요한 유틸리티 함수들을 src/utils 디렉터리에 구현하겠다.  
+src/utils/arrayUtil.ts 파일을 생성한다. 그리고 함수 3개를 구현한다. 이 함수들은 순수 함수 형태로 배열에서 아이템의 순서를
+변경하거나 제거, 삽입하는 기능을 수행한다.
 
+## 🎈 onDragEnd 콜백 함수 구현하기
+react-beautiful-dnd 패키지의 DragDropContext가 요구하는 onDragEnd 콜백 함수를 구현하려면 먼저 DropResult 타입의 실제
+값을 이해해야 한다. 만약 useLists.ts 파일에 다음 내용을 구현하면 onDragEnd 에서 result 매개변숫값을 관찰할 수 있다.
 
+다음은 같은 목록에서 드래그 앤 드롭을 했을 때 result 값의 내용이다. source와 destination의 droppableId 값은 같은 목록에서
+옮겼기 때문에 같은 값을 갖는다. 하지만 index를 보면 source 가 1 이고 dest 가 0 이다 이것은 두 번째 카드가 첫 번째로 이동했다는
+의미이다.
 
+<img src="../../images/05-04.png">
 
+그런데 타입스크립트로 result 의 destination 속성은 undefined 일 수 있다. 타입스크립트에서 string 타입과 string | undefined 타입은 전혀 다르다.
+이를 해결하려면 다음처럼 if 문으로 undefined 일 때는 아무 작업을 하지 않는 코드가 필요하다. 그러면 타입스크립트는 if 문
+이후의 값들은 더 이상 undefined 여부를 체크하지 않는다.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```typescript jsx
+const onDragEnd = useCallback((result: DropResult) => {
+  console.log('onDragEnd', result)
+  const destinationListid = result.destination?.droppableId
+  const destinationCardIndex = resul.destination?.index
+  if (destinationListid === undefined || destinationCardIndex === undefined) return
+} , [])
+```
+같은 목록에서 카드를 옮길 때는 카드의 두 색인값 source.index 와 destination.index 를 교체해 줘야 한다.
+그리고 이 작업은 arrayUtil.ts 파일에서 swapItemInArray 함수를 사용하면 된다.  
+카드를 다른 목록으로 옮길 때는 source 쪽 listid 부분에서 카드의 uuid를 삭제하고, destination 쪽 listid 부분에는 
+해당 index 에 카드의 uuid를 추가해 줘야 한다.  
+이런 내용을 useLists.ts 파일에 onDragEnd 콜백 함수를 구현한다. 이로써 칸판 보드 앱이 완성된다.
 
 
 
