@@ -19,7 +19,7 @@ const CreateListForm: FC<CreateListFormProps> = ({onCreateList}) => {
   }, [value, onCreateList])
 
   const history = useNavigate()
-  const goBack = () => history(-1)
+  const goBack = useCallback(() => () => history(-1), [history])
 
   return (
     <div className={'flex justify-center p-2'}>

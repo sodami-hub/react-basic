@@ -140,36 +140,65 @@ navigate(-1) 코드는 이전 페이지로 이동한다. 이 코드는 Link 컴�
 없으므로 NoMatch 컴포넌트가 나타난다. 이제 이런 라유트 변수가 있는 경로에 컴포넌트를 설정하는 방법을 알아보겠다.
 
 ## 🎈 Card 컴포넌트 만들기
+src/routes 디렉터리에 RoutesSetup.tsx 파일에 Card.tsx에 대한 라우트 경로를 작성한다. 코드에서 cardid라는 이름의
+라우트 변수를 사용한다.
 
-### 🕸️
-### 🕸️
+## 🎈 Card 컴포넌트에 리액트 라우터 훅 적용하기
+이제 리액트 라우터가 제공하는 몇 가지 훅을 알아보고 Card 컴포넌트에 적용해 보겠다.
 
-## 🎈
-### 🕸️
-### 🕸️
-### 🕸️
+### 🕸️ useLocation 훅 알아보기
+리액트 라우터는 다음과 같이 useLocation 훅을 제공한다. useLocation 은 location 객체를 얻는다.
+```typescript jsx
+import {useLocation} from 'react-router-dom'
 
-## 🎈
-### 🕸️
-### 🕸️
-### 🕸️
-## 🎈
-### 🕸️
-### 🕸️
-### 🕸️
+const location = useLocation()
+```
+location 객체는 웹 브라우저가 기본으로 제공하는 window.location 과 개념적으로 비슷하지만 완전히 똑같지는 않다.
+location 객체가 어떤 정보를 담고 있는지 src/routes 디렉터리의 Card.tsx 파일을 구현해 보겠다.
 
-## 🎈
-### 🕸️
-### 🕸️
-### 🕸️
-## 🎈
-## 🎈
-## 🎈
+코드를 실행해서 생성한 카드를 클릭해보면 다음과 같은 정보를 확인할 수 있다. 이 가운데 location.pathname 으로
+현재 실행된 라우트 경로를 얻을 수 있음을 확인할 수 있다.
 
+<img src="../../images/06-02.png" width="600">
 
+### 🕸️ useParams 훅 알아보기
+리액트 라우터는 useParams 훅을 제공한다. useParams 훅을 사용해서 params 객체를 얻을 수 있고, 이 객체로부터 라우트 매개변숫값을 얻는다.
+```typescript jsx
+import {useParams} from 'react-router-dom'
 
+const params = useParams()
+```
+Card.tsx 에 다음과 같은 코드를 추가해서 결과를 보겠다.
+```typescript jsx
+cosnt params = useParmas()
 
+<p> params: {JSON.stringify(params, null, 2)} </p>
+```
+결과를 보면 params는 `'라우트_매개변수_이름 : 값'` 형태의 정보를 가지는 `Record<string, any>` 타입의 객체임을 알 수 있다.
 
+<img src="../../images/06-03.png" width="450">
+
+### 🕸️ useSearchParams 훅 알아보기
+리액트는 useSearchParams 훅도 제공한다. 이 훅은 searchParams 객체와 setSearchParams(보통은 사용할 필요가 없다.) 세터 함수를 튜플 형태로 반환한다.
+
+```typescript jsx
+import {useSearchParams} from "react-router";
+
+const [searchParams, setSearchParams] = useSearchParams()
+```
+라우트 경로에 쿼리 매개변수가 '?from=0&to=20' 과 같을 때, from과 to 쿼리 매개변수는 다음처럼 얻을 수 있다.
+```typescript jsx
+const from = searchParams('from')
+const to = searchParams('to')
+```
+
+### 🕸️ Card 컴포넌트 리액트 라우터 훅 적용하기
+이제 Card.tsx 를 구현한다.
+
+## 🎈 카드 상세 페이지 만들기 
+Card.tsx 파일을 조금 더 수정해서 카드의 상세 페이지가 나타나도록 수정한다. 코드는 useState 훅을 사용하여 CardType이나 null인 card
+객체를 설정한다. 이렇게 구현한 이유는 useParams 로 얻은 cardid값이 없거나, 있더라도 cardEntities[cardid] 에서 얻은 값이 null 일 수
+있기 때문이다. 라우트 경로는 주소 창에서 임의로 변경 될 수 있으므로 이런 방어적인 코드가 필요하다.
 
 
 

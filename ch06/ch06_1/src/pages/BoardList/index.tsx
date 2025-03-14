@@ -1,4 +1,4 @@
-import type {FC} from 'react'
+import type {FC, SyntheticEvent} from 'react'
 import type {List} from '../../store/commonTypes'
 import type {MoveFunc} from '../../components'
 

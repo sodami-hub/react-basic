@@ -1,4 +1,4 @@
-import {useCallback} from 'react'
+import {SyntheticEvent, useCallback} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import type {AppState} from './AppState'
 import type {Card, UUID} from './commonTypes'
@@ -25,7 +25,8 @@ export const useCards = (listid: UUID) => {
   }, [dispatch, listid])
 
   const onRemoveCard = useCallback(
-    (uuid: UUID) => () => {
+    (uuid: UUID) => (event: SyntheticEvent) => {
+      event.stopPropagation()
       dispatch(C.removeCard(uuid))
       dispatch(LC.removeCardidFromListid({listid, cardid: uuid}))
     },

@@ -1,4 +1,4 @@
-import type {FC} from 'react'
+import type {FC, SyntheticEvent} from 'react'
 import type {ICard} from '../../data'
 import {Div, Avatar} from '../../components'
 import {Icon} from '../../theme/daisyui'
@@ -6,7 +6,7 @@ import {CardDraggable} from '../../components'
 
 export type ListCardProps = {
   card: ICard
-  onRemove?: () => void
+  onRemove?: (event: SyntheticEvent) => void
   onClick?: () => void
   draggableId: string
   index: number
