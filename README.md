@@ -23,6 +23,7 @@ C:\Users\leejinhun\WebstormProjects\react> yarn create react-app [react-first-ap
       <br>
 
 ```shell
+yarn create react-app [생성할 프로젝트 디렉터리] --template typescript
 yarn add -D @types/luxon @types/chance prettier postcss autoprefixer tailwindcss@3.4.17 @tailwindcss/line-clamp daisyui
 yarn add -D @types/redux-logger @types/redux-thunk @types/react-dnd @types/react-beautiful-dnd
 yarn add luxon chance @fontsource/material-icons redux react-redux @reduxjs/toolkit redux-logger redux-thunk
