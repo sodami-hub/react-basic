@@ -1,10 +1,13 @@
-import {Title} from '../../components'
+import {Outlet} from 'react-router-dom'
+import Footer from './Footer'
+import NavigationBar from './NavigationBar'
 
-export default function CopyMe() {
+export default function Layout() {
   return (
-    <section className={'mt-4'}>
-      <Title>CopyMe</Title>
-      <div className={'mt-4'}></div>
-    </section>
+    <>
+      <NavigationBar />
+      <Outlet />
+      <Footer />
+    </>
   )
 }

@@ -1,10 +1,11 @@
-import {Title} from '../../components'
+import Hero from './Hero'
+import Promotion from './Promotion'
 
-export default function CopyMe() {
+export default function LandingPage() {
   return (
     <section className={'mt-4'}>
-      <Title>CopyMe</Title>
-      <div className={'mt-4'}></div>
+      <Hero />
+      <Promotion />
     </section>
   )
 }
