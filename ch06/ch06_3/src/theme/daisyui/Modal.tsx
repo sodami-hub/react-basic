@@ -10,6 +10,7 @@ export const Modal: FC<ModalProps> = ({open, className: _className, ...props}) =
   const className = ['modal', open ? 'modal-open' : '', _className].join(' ')
   return <div {...props} className={className} />
 }
+
 export type ModalContentProps = ReactDivProps & {
   // 속성의 값이 함수형이고 이 함수형의 타입이 매개변수가 없고, 반환값도 없는 함수임을 정의한다.
   onCloseIconClicked?: () => void

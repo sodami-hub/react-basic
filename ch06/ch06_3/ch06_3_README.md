@@ -103,39 +103,35 @@ src/context/AuthContext.tsx 파일에 writeObjectP 함수를 사용하여 localS
 참고로 Promise 객체는 항상 finally 메서드를 호출하므로 굳이 then 이나 catch 메서드를 호출하는 코드가 필요하지 않다.
 
 ## 🎈 로그인 기능 만들기
+SignUP.tsx 코드를 복사해서 Login.tsx 에 붙여넣는다. 그리고 코드를 작성한다. 앞서 구현한 readObjectP 함수를
+사용하여 localStorage 에 담긴 'user' 키에 해당하는 값이 있으면 이를 입력 상자의 초깃값으로 사용한다. 따라서 실행 결과를 보면
+회원 가입할 때 입력한 이메일 주소가 로그인할 때 기본값으로 나타난다.
 
+## 🎈 로그아웃 기능 만들기
+04-3에서 만든 daisyui 의 모달 컴포넌트를 사용하여 사용자의 로그아웃 의사를 다시 한번 묻는 대화상자의 형태로 로그아웃 컴포넌트를
+만들어보겠다. src/routes/Logout.tsx 파일에 코드를 작성한다.
 
-
-
-
-## 🎈 
-
-### 🕸️
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## 🎈
-
-### 🕸️
-## 🎈
-
-### 🕸️
-## 🎈
-
-### 🕸️
-## 🎈
-
-### 🕸️
+## 🎈 로그인한 사용자만 접근하도록 막기
+클라이언트 측 라우팅은 웹 브라우저의 주소 창을 이용하므로 사용자가 주소 창에서 'http://localhost:3000/logout' 을 직접 입력하면
+로그인하지 않았는데도 로그아웃 페이지에 진입할 수 있다. 이 때문에 '/logout' 등의 경로가 로그인하지 않으면 절대로 진입할 수 없는
+비공개 라우트가 되려면 useAuth 훅 호출로 얻은 loggedUser 값이 undefined 인지를 검사하는 로직을 모든 비공개 라우트와 연결된
+컴포넌트에 구현해 주어야 한다.  
+그런데 이 작업은 똑같은 로직을 모든 컴포넌트에 구현해 줘야 하므로 상당히 번거롭다. RequireAuth 컴포넌트는 모든 비공개 라우트에
+구현해 줘야 하는 기능을 한군데 구현해 놓아 중복되는 코드를 줄이는 역할을 한다.  
+다음은 앞으로 구현할 RoutesSetup.tsx 코드에서 RequireAuth 컴포넌트 사용 예를 가져온것이다. RequireAuth 의 구현 목적이 비공개
+라운트에 설정된 컴포넌트마다 구현할 로직을 한군데에서 처리하는 것이므로 `<Board />` 가 비공개 라우트가 되도록 `<Board />` 를
+ReauireAuth로 감싸는 방식으로 구현한다.
+```typescript jsx
+<Route path={'/board'}
+    element={
+      <RequireAuth>
+        <Board />
+      </RequireAuth>
+    }
+/>
+```
+src/routes/ReauireAuth.tsx 파일에 코드를 작성한다. 코드는 loggedUser 값이 undefined 일 때는 이전 페이지로 돌아가고, 아니면
+`<Board/>`와 같은 children 속성에 담긴 요소가 화면에 나타나게 한다. `<>{children}</>` 부분은 2장에서 알아본 것처럼
+{children}을 직접 반환할 수 없으므로 React.Fragment 컴포넌트의 단축형인 `<></>` 로 감싼 것이다.  
+RequireAuth 컴포넌트를 src/routes 디렉터리의 RoutesSetup.tsx 파일에 다음과 같은 형태로 적용한다. 이 코드는 /board 등 비공개
+라우트 경로는 반드시 로그인한 사용자만 접근하게 하려는 의도이다.
