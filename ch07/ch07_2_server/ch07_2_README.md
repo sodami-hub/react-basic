@@ -89,6 +89,15 @@ src/test/findTest.ts 파일을 생성하고 코드를 작성한다. 코드는 fi
 코드를 실행하면 앞선 insertTest.ts 에서 user 컬렉션에 삽입한 문서들을 확인할 수 있다.
 
 ### 🕸️ 문서 수정 메서드 사용하기
+문서 수정 관련 메서드들**(updateOne, updateMany, findOneAndUpdate)**은 모두 프로미스 객체를 반환한다.
+그런데 findOneAndUpdate 메서드를 호출할 때 몽고셸에서는 returnNewDocument 속성값을 true(변경된 값 반환)로 했지만,
+프로그래밍으로 이와 같은 효과를 보려면 속성값을 'after'로 해야 된다.(before 와 after 중 하나를 사용한다.) 
+src/test/updateTest.ts 파일을 생성하고 코드를 작성한다.
+
+### 🕸️ 문서 삭제 메서드 사용하기
+deleteOne과 deleteMany 메서드는 모두 프로미스 객체를 반환한다.
+src/test/deleteTest.ts 파일을 생성하고 코드를 작성한다.
+
 
 
 
