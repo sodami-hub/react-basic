@@ -44,3 +44,9 @@ yarn add react-dnd react-dnd-html5-backend react-beautiful-dnd react-router-dom
 > yarn add -D @types/mongodb
 ```
 
+## ch07 // 익스프레스 설치하기
+```shell
+> yarn add express cors
+> yarn add -D @types/express @types/cors nodemon
+```
+
