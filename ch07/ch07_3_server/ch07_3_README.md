@@ -101,11 +101,93 @@ connect http://localhost:4000
 ```
 
 ## 🎈 익스프레스 REST API 서버 만들기
+익스프레스로 웹 서버를 만들 때는 항상 다음 코드 패턴으로 app 객체를 만들어야 한다.
+
+```typescript
+import express from 'express'
+
+const app = express()
+```
+app 객체는 앞서 언급한 4개의 HTTP 메서드에 대응하는 4개의 메서드를 제공하며, 이 메서드들은 항상 app 객체를 다시 반환한다.
+app 의 메서드들은 항상 다음과 같은 코드 패턴으로 사용된다. 다만 여기서 콜백 함수의 req 와 res 매개변수 타입은 앞서 본 http
+패키지가 제공하는 createServer 때의 IncomingMessage, ServerResponse 와는 전혀 다른 익스프레스만의 타입임을 기억해야 한다.
+
+```typescript
+app
+  .메서드명(경로, (req, res) => {})
+```
+
+또한 메서드들은 항상 app 객체를 다시 반환하므로 REST API 를 구현할 때는 보통 다음과 같은 메서드 체인 방식으로 구현한다.
+
+```typescript
+app
+  .get(경로, (req, res) => {})
+  .post(경로, (req, res) => {})
+  .put(경로, (req, res) => {})
+  .delete(경로, (req, res) => {})
+```
+app 객체의 또다른 특징으로는 다음 코드에서 보듯 createServer의 매개변수인 requestListener로서 동작할 수 있다는 점이다.
+```typescript
+const app = express()
+createServer(app).listen(port, () => console.log(`connect http://${hostname}:${port}`))
+```
+이제 src/index.tx 파일을 다음처럼 구현한다. 앞서 언급한 대로 express()가 생성한 app 객체는 HTTP 메서드와 유사한 이름의 메서드를 제공하므로
+경로 '/'에 대해 GET 메서드로 웹 브라우저가 요청하면 이에 응답하는 코드를 구현하고 있다.
+
+다음은 서버의 경로로 접속했을 때 웹 브라우저의 모습이다. 코드에서 res.json 메서드를 호출하여 JSON 형식 데이터를
+전송하였으므로 JSON.stringify 호출을 통해 JSON 데이터를 화면에 보여 준다. 이처럼 JSON 형식으로 응답하는 이 코드가
+가장 단순한 REST API 서버이다.
+
+<img src="../../images/07-09.png" width="280">
+
+### 🕸️익스프레스 관련 코드 분리하기
+이제 src/index.ts 파일에서 익스프레스 관련 코드를 분리해 보겠다. 먼저 src 디렉터리에 express 라는 디렉터리와 index.ts 파일을 생성한다.
+그리고 index.ts 파일을 구현한다. 코드는 createExpressApp 함수가 any 타입 배열을 args 라는 매개변수를 수신하는 형태로
+구현했다. 이는 createExpressApp(db), createExpressApp(db1,db2) 처럼 src/index.ts 파일에서 createExpressApp
+함수를 호출할 때 매개변수를 입력할 수 있게 하는 용도이다.  
+이렇게 하면 src/index.ts 의 코드를 간결하게 할 수 있다.
+
+## 🎈 익스프레스 미들웨어와 use 메서드
+익스프레스 객체 app은 다음처럼 사용하는 use 메서드를 제공하며, use 메서드의 매개변수로 사용되는 콜백 함수를 미들웨어라고
+한다. 익스프레스 미들웨어는 다양한 종류가 있으며, 익스프레스는 여러가지 다양한 기능을 미들웨어를 통해 쉽게 사용할 수 있도록 한다.
+```typescript
+app.use(미들웨어)
+```
+익스프레스 미들웨어는 다음처럼 매개변수 3개로 구성된 함수 형태로 구현한다. 여기서 3번째 매개변수인 next는 함수인데
+이 함수를 호출하면 모든 것이 정상으로 동작한다. 그러나 next를 호출하지 않으면 이 미들웨어 아래쪽에 메서드 체인으로
+연결된 메서드들이 호출되지 않는다.
+```typescript
+const middleware = (req, res, next) => {}
+```
+다음 코드는 간단하게 req의 url과 method 속성값을 기록하는 미들웨어를 구현한 것이다. 이 로깅 미들웨어는 단순히
+로깅하는 기능만 하므로 next 함수를 호출하여 app 객체에 설정한 내용이 정상으로 동작하도록 한다.
+```typescript
+app.use((req,res,next) => {
+  console.log(`url='${req.url}, method=${req.method}`)
+  next()
+})
+```
+이제 src/express 디렉터리의 index.ts 파일에 로깅 미들웨어를 추가한다. app.use 메서드 또한 다른 메서드처럼
+app 객체를 반환하므로 이와 같은 메서드 체인 형태로 작성할 수 있다.  
+코드를 실행하고 브라우저로 서버에 접속해보면 터미널에 다음과 같은 메시지를 확인할 수 있다.
+```shell
+...(생략)...
+[nodemon] starting `ts-node src`
+Server started on port 4000
+url=/, method=GET
+...(생략)...
+```
+
+### 🕸️ express.static 미들웨어
 
 
 
+
+
+
+
+## 🎈
 ### 🕸️
-
 
 
 
