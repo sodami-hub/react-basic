@@ -1,17 +1,34 @@
 import {Router} from 'express'
+import type {MongoDB} from '../mongodb'
 
 export const testRouter = (...args: any[]) => {
+  
+  const db:MongoDB = args[0]
+  const test = db.collection('test')
+
   const router = Router()
 
   return router
-    .get('/', (req, res) => {
-      // 모든 데이터를 요청하는 경우
-      res.json({ok: true})
+    .get('/', async(req, res) => {
+      try {
+        const findResult = await test.find({}).toArray()
+        res.json({ok: true, body: findResult})
+      } catch (e) {
+        if (e instanceof Error) {
+          res.json({ok:false, message:e.message})
+        }
+      }
     })
-    .get('/:id', (req, res) => {
+    .get('/:id', async (req, res) => {
       const {id} = req.params
-      // id값을 가진 데이터만 요청하는 경우
-      res.json({ok: true, id})
+      try{
+        const findOneResult = test.findOne({id})
+        res.json({ok: true, findOneResult})
+      } catch (e) {
+        if (e instanceof Error) {
+          res.json({ok:false, message:e.message})
+        }
+      }
     })
     .post('/', (req, res) => {
       // req.body 의 데이터를 서버에 저장하기를 요청하는 경우
