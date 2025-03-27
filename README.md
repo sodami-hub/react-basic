@@ -30,7 +30,7 @@ yarn add -D @types/luxon @types/chance prettier postcss autoprefixer tailwindcss
 yarn add -D @types/redux-logger @types/redux-thunk @types/react-dnd @types/react-beautiful-dnd
 ```
 
-## ch07의 몽고DB를 사용한 API서버 개발의 과정에서의 프로젝트 만드는 과정
+## ch07-1 서버 만들기! // 몽고DB를 사용한 API서버 개발의 과정에서의 초기 설정 과정
 ```shell
 # package.json 파일을 생성한다.
 > yarn init -y  
@@ -44,9 +44,19 @@ yarn add -D @types/redux-logger @types/redux-thunk @types/react-dnd @types/react
 > yarn add -D @types/mongodb
 ```
 
-## ch07 // 서버 만들기!! - 익스프레스 설치하기
+## ch07-2 // 서버 만들기!! - 익스프레스 설치하기
 ```shell
 > yarn add express cors
 > yarn add -D @types/express @types/cors nodemon
+```
+## 07-4 // 웹 토큰 기능 패키지 설치
+```shell
+yarn add jsonwebtoken
+yarn add -D @types/jsonwebtoken
+```
+## 07-4 // 비밀번호 해시값 구하기 - 클라이언트의 비밀번호를 암호화하는 패키지
+```shell
+yarn add bcrypt
+yarn add -D @types/bcrypt
 ```
 
