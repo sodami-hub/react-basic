@@ -24,10 +24,10 @@ C:\Users\leejinhun\WebstormProjects\react> yarn create react-app [react-first-ap
 
 ```shell
 yarn create react-app [생성할 프로젝트 디렉터리] --template typescript
-yarn add -D @types/luxon @types/chance prettier postcss autoprefixer tailwindcss@3.4.17 @tailwindcss/line-clamp daisyui
-yarn add -D @types/redux-logger @types/redux-thunk @types/react-dnd @types/react-beautiful-dnd
 yarn add luxon chance @fontsource/material-icons redux react-redux @reduxjs/toolkit redux-logger redux-thunk
 yarn add react-dnd react-dnd-html5-backend react-beautiful-dnd react-router-dom
+yarn add -D @types/luxon @types/chance prettier postcss autoprefixer tailwindcss@3.4.17 @tailwindcss/line-clamp daisyui
+yarn add -D @types/redux-logger @types/redux-thunk @types/react-dnd @types/react-beautiful-dnd
 ```
 
 ## ch07의 몽고DB를 사용한 API서버 개발의 과정에서의 프로젝트 만드는 과정

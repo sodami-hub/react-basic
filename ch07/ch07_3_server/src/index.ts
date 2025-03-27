@@ -3,7 +3,8 @@ import {createExpressApp} from './express'
 import {getPublicDirPath} from './config'
 import {makeDir} from './utils'
 
-import * as M from './mongodb'
+import type {MongoDB} from './mongodb'
+import {connectAndUseDB} from './mongodb'
 
 /*
 const hostname = 'localhost'
@@ -34,13 +35,12 @@ createServer(app).listen(port, () => console.log(`connect http://${hostname}:${p
 
 makeDir(getPublicDirPath())
 
-const connectCallback = (db: M.MongoDB) => {
+const connectCallback = (db: MongoDB) => {
   const hostname = 'localhost'
   const port = 4000
-
   createServer(createExpressApp(db)).listen(port, () =>
-    console.log(`Server started on port ${port}`)
+    console.log(`connect http://${hostname}:${port}`)
   )
 }
 
-M.connectAndUseDB(connectCallback, 'ch07')
+connectAndUseDB(connectCallback, 'ch07')

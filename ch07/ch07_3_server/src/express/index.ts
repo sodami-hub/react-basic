@@ -15,5 +15,6 @@ export const createExpressApp = (...args: any[]) => {
     .get('/', (req, res) => {
       res.json({message: 'hello world!!!'})
     })
+
   return setupRouters(app, ...args)
 }
