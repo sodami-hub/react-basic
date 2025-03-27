@@ -44,7 +44,7 @@ yarn add -D @types/redux-logger @types/redux-thunk @types/react-dnd @types/react
 > yarn add -D @types/mongodb
 ```
 
-## ch07 // 익스프레스 설치하기
+## ch07 // 서버 만들기!! - 익스프레스 설치하기
 ```shell
 > yarn add express cors
 > yarn add -D @types/express @types/cors nodemon
