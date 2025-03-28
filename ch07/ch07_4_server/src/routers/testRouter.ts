@@ -20,7 +20,6 @@ export const testRouter = (...args: any[]) => {
     })
     .get('/:id', async (req, res) => {
       const {id} = req.params
-      console.log('1', id)
       try {
         const findOneResult = (await test.findOne({id})) || {}
         res.json({ok: true, findOneResult})

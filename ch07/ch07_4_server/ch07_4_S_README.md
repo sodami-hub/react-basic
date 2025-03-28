@@ -80,8 +80,55 @@ user 컬렉션에 있는지 확인하여 회원 가입한 사용자가 보낸 �
 같은 디렉터리의 index.ts 에 해당 파일을 추가하고, setupRouters.ts 파일에 authRouter 에 대한 경로를 설정한다.
 즉, 회원 가입 경로는 '/auth/signup' 이 된다.
 
-
-
+## 🎈 로그인 기능 구현하기
+로그인 기능을 구현한다. 그 전에 몽고DB 의 ObjectId 에 관해 알아보겠다. 컬렉션에 저장되는 문서는 항상 ObjectId 타입의 _id 속성이 있다.
+이제 문자열을 ObjectId 형태로 변화해 주는 stringToObjectId 함수를 만든다. src/mongodb/stringToObjectId.ts 파일을 만들고 코드를 작성한다.
+그리고 index.ts 에 파일을 반영한다.  
+이제 로그인 기능을 구현해 보겠다. JSON 토큰은 HTTP 요청 헤더에서 Authorization 속성의 설정값으로 서버에 전송된다.
+```typescript
+headers: {
+  Authorization: `Bearer ${jwt}`
+}
+```
+이렇게 서버로 전송된 HTTP 요청 헤더는 다음 코드 형태로 얻을 수 있다.
+```typescript
+router.post(경로, (req,res) => {
+  const header = req.headers
+})
+```
+다만, 헤더가 없는 요청도 있을 수 있으므로 다음처럼 방어하는 코드가 필요하다.
+```typescript
+router.post(경로, (req,res) => {
+  const header = req.headers || {}
+})
+```
+다만, 클라이언트 쪽에서 authorization 속성값을 항상 설정하여 보낸다고 장담할 수 없으므로 다음처럼 방어하는 코드가 필요하다.
+```typescript
+router.post(경로, (req,res)=> {
+  const {authorization} = req.headers || {}
+  if (!authorization) {
+    res.json({ok:false, errorMessage: 'JSON 토큰이 없습니다.'})
+    return
+  }
+})
+```
+그리고 authorization 속성에 담긴 JWT 는 `'Bearer' + 공백(' ')문자 + JSON_토큰` 형태로 담겨 있으므로 다음과 같은
+코드 형태로 얻을 수 있다.
+```typescript
+const tmp =authorization.split(' ')
+if (tmp.length !== 2) {
+  res.json({ok:false, errorMessage: '헤더에서 JWT를 찾을 수 없다.'})
+} else {
+  const jwt = tmp[1]
+}
+```
+그리고 이렇게 얻은 JWT 로부터 user 컬렉션의 문서 _id 값을 얻어 findOne 메서드를 통해 JSON 토큰에 담긴 userId 값을
+가진 문서를 얻을 수 있다.
+```typescript
+const decoded = (await U.jwtVerifyP(jwt)) as {userId: string}
+const result = await user.findOne({_id:stringToObjectId(decoded.userId)})
+```
+이러한 내용을 바탕으로 src/routes 의 authRouter.ts 파일에서 post('/login') 라우트 부분을 구현한다.
 
 
 
