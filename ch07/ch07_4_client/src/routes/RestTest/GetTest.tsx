@@ -1,11 +1,12 @@
 import {useState, useCallback} from 'react'
 import {Button} from '../../theme/daisyui'
 import {get} from '../../server'
+import {useAuth} from '../../context'
 
 export default function GetTest() {
   const [data, setData] = useState<object>({})
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-
+  const {jwt} = useAuth()
   /*
   useEffect(() => {
     fetch('http://localhost:4000/test')
@@ -16,13 +17,13 @@ export default function GetTest() {
 */
 
   const getAllTest = useCallback(() => {
-    get('/test')
+    get('/test', jwt)
       .then(res => res.json())
       .then(data => setData(data))
       .catch(err => setErrorMessage(err.message))
-  }, [])
+  }, [jwt])
   const getOneTest = useCallback(() => {
-    get('/test/1234')
+    get('/test/1234', jwt)
       .then(res => res.json())
       .then(data => setData(data))
       .catch(err => setErrorMessage(err.message))

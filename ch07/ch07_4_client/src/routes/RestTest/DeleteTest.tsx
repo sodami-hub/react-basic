@@ -1,13 +1,14 @@
 import {useState, useCallback} from 'react'
 import {Button} from '../../theme/daisyui'
 import {del} from '../../server'
+import {useAuth} from '../../context'
 
 export default function DeleteTest() {
   const [data, setData] = useState<object>({})
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-
+  const {jwt} = useAuth()
   const deleteTest = useCallback(() => {
-    del('/test/1234')
+    del('/test/1234', jwt)
       .then(res => res.json())
       .then(data => setData(data))
       .catch(err => setErrorMessage(err.message))

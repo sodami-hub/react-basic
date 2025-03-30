@@ -15,11 +15,11 @@ export default function Logout() {
       toggleOpen() // 대화상자 닫기
       navigate('/') // 메인 페이지로 이동
     })
-  }, [navigate, toggleOpen, logout])
+  }, [logout, navigate, toggleOpen])
 
   const onCancel = useCallback(() => {
     toggleOpen() // 대화 상자 닫기
-    navigate('-1') // 이전 페이지로 돌아감
+    navigate(-1) // 이전 페이지로 돌아감
   }, [navigate, toggleOpen])
 
   return (
